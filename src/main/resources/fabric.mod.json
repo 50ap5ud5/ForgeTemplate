@@ -5,7 +5,7 @@
 
   "name": "${mod_name}",
   "description": "${mod_description}",
-  "authors": "${mod_authors}",
+  "authors": ["${mod_authors}"],
   "contact": {
     "homepage": "${homepage}",
     "sources": "${sources}"
@@ -17,12 +17,12 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "${main_mod_class_package}"
+      "${main_mod_class}"
     ]
   },
   "accessWidener":"${mod_id}.accesswidener",
   "mixins": [
-    "${modid}.mixins.json"
+    "${mod_id}.mixins.json"
   ],
 
   "depends": {
