@@ -6,8 +6,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1+', changing: true
-        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.8-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -181,47 +181,35 @@ if (System.getProperty("idea.sync.active") == "true") {
     }
 }
 
-// Based off Mekanism: https://github.com/mekanism/Mekanism/blob/v10.1/build.gradle#L155-L180
-def resource_targets = ["META-INF/mods.toml", "pack.mcmeta", "${mod_id}.mixins.json"]
-task replaceResources(type: Copy) {
-    outputs.upToDateWhen { false }
-    def spec = copySpec {
-        from(sourceSets.main.resources) {
-            include resource_targets
-            expand "project": project, "mod_id": mod_id, "mod_name": mod_name, "mod_version": mod_version,
-                   "mod_authors": mod_authors, "credits":credits, "mod_description": mod_description,
-                   "display_url":display_url, "logo_file":logo_file,
-                   "issue_tracker_url": issue_tracker_url,
-                   //"update_json_url": update_json_url,
-                   "license": license,
-                   "forge_version_range": forge_version_range, "minecraft_version_range": minecraft_version_range,
-                   "loader_version_range": loader_version_range
-        }
-    }
-    with spec
-    into "$buildDir/resources/main/"
-
-    // If IntelliJ's output dir exists, copy it there as well
-    if (new File("$rootDir/out/production/${project.name}.main/").exists()) {
-        copy {
-            with spec
-            into "$rootDir/out/production/${project.name}.main/"
-        }
-    }
-    // If Eclipse's output dir exists, copy it there as well
-    if (new File("$rootDir/bin/main/").exists()) {
-        copy {
-            with spec
-            into "$rootDir/bin/main/"
-        }
-    }
-}
-
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
+def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
+def replaceProperties = [mod_id: mod_id, mod_name: mod_name, mod_version: mod_version,
+                   mod_authors: mod_authors, credits:credits, mod_description: mod_description,
+                   display_url:display_url, logo_file:logo_file,
+                   issue_tracker_url: issue_tracker_url,
+                   //update_json_url: update_json_url,
+                   license: license,
+                   forge_version_range: forge_version_range, minecraft_version_range: minecraft_version_range,
+                   loader_version_range: loader_version_range]
 processResources {
-    duplicatesStrategy = DuplicatesStrategy.FAIL
-    // Exclude the resource targets as we manually handle those and don't want them to invalidate our cache
-    exclude resource_targets
-    finalizedBy replaceResources
+    inputs.properties replaceProperties
+    replaceProperties.put 'project', project
+
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+
+    intoTargets.each { target ->
+        if (file(target).exists()) {
+            copy {
+                from(sourceSets.main.resources) {
+                    include resourceTargets
+                    expand replaceProperties
+                }
+                into target
+            }
+        }
+    }
 }
 
 jar {
