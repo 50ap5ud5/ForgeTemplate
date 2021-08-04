@@ -76,7 +76,7 @@ if (System.getProperty("idea.sync.active") == "true") {
 
 def resourceTargets = ["fabric.mod.json", "pack.mcmeta"]
 def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
-def replaceProperties = [project: project, mod_id: mod_id, mod_name: mod_name, mod_version: mod_version,
+def replaceProperties = [mod_id: mod_id, mod_name: mod_name, mod_version: mod_version,
                    main_mod_class: main_mod_class,
                    mod_authors: mod_authors, mod_description: mod_description,
                    homepage:homepage, sources:sources, icon_file:icon_file,
