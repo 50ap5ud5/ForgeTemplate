@@ -1,11 +1,13 @@
 plugins {
-    id 'fabric-loom' version '0.8-SNAPSHOT'
+    id 'fabric-loom' version '0.9-SNAPSHOT'
     id 'maven-publish'
 }
 
 loom {
-    accessWidener = file("src/main/resources/${mod_id}.accesswidener")
-    refmapName = "${mod_id}.refmap.json"
+    accessWidenerPath = file("src/main/resources/${mod_id}.accesswidener")
+	mixin {
+      defaultRefmapName = "${mod_id}.refmap.json"
+    }
 }
 
 sourceCompatibility = JavaVersion.VERSION_16
@@ -72,47 +74,35 @@ if (System.getProperty("idea.sync.active") == "true") {
     }
 }
 
-def resource_targets = ["fabric.mod.json", "pack.mcmeta"]
-task replaceResources(type: Copy) {
-    dependsOn(jar)
-    outputs.upToDateWhen { false }
-    def spec = copySpec {
-        from(sourceSets.main.resources) {
-            include resource_targets
-            expand "project": project, "mod_id": mod_id, "mod_name": mod_name, "mod_version": mod_version,
-                   "main_mod_class": main_mod_class,
-                   "mod_authors": mod_authors, "mod_description": mod_description,
-                   "homepage":homepage, "sources":sources, "icon_file":icon_file,
-                   "license": license,
-                   "java_version_range":java_version_range,
-                   "fabric_version_range": fabric_version_range, "minecraft_version_range": minecraft_version_range,
-                   "fabric_loader_version_range": fabric_loader_version_range
-        }
-    }
-    with spec
-    into "$buildDir/resources/main/"
-
-    // If IntelliJ's output dir exists, copy it there as well
-    if (new File("$rootDir/out/production/${project.name}.main/").exists()) {
-        copy {
-            with spec
-            into "$rootDir/out/production/${project.name}.main/"
-        }
-    }
-    // If Eclipse's output dir exists, copy it there as well
-    if (new File("$rootDir/bin/main/").exists()) {
-        copy {
-            with spec
-            into "$rootDir/bin/main/"
-        }
-    }
-}
-
+def resourceTargets = ["fabric.mod.json", "pack.mcmeta"]
+def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
+def replaceProperties = [project: project, mod_id: mod_id, mod_name: mod_name, mod_version: mod_version,
+                   main_mod_class: main_mod_class,
+                   mod_authors: mod_authors, mod_description: mod_description,
+                   homepage:homepage, sources:sources, icon_file:icon_file,
+                   license: license,
+                   java_version_range:java_version_range,
+                   fabric_version_range: fabric_version_range, minecraft_version_range: minecraft_version_range,
+                   fabric_loader_version_range: fabric_loader_version_range]
 processResources {
-    duplicatesStrategy = DuplicatesStrategy.FAIL
-    // Exclude the resource targets as we manually handle those and don't want them to invalidate our cache
-    exclude resource_targets
-    finalizedBy replaceResources
+    inputs.properties replaceProperties
+    replaceProperties.put 'project', project
+
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+
+    intoTargets.each { target ->
+        if (file(target).exists()) {
+            copy {
+                from(sourceSets.main.resources) {
+                    include resourceTargets
+                    expand replaceProperties
+                }
+                into target
+            }
+        }
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
