@@ -1,4 +1,4 @@
-package me.sizableshrimp.examplemod;
+package me.soapsuds.examplemod;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
