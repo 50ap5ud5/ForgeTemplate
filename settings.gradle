@@ -1,1 +1,20 @@
-rootProject.name = "${mod_name}"
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            name 'MinecraftForge'
+            url 'https://maven.minecraftforge.net/'
+        }
+        maven {
+            name 'ParchmentMC'
+            url 'https://maven.parchmentmc.org'
+        }
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.toString() == 'org.spongepowered.mixin') {
+                useModule("org.spongepowered:mixingradle:${requested.version}")
+            }
+        }
+    }
+}
