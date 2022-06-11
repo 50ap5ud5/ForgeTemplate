@@ -37,7 +37,7 @@ dependencies {
     */
 
     //mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    mappings minecraft.officialMojangMappings()
+    mappings loom.officialMojangMappings()
 
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
@@ -54,9 +54,9 @@ dependencies {
     modCompileOnly("com.terraformersmc:modmenu:${mod_menu_version}") {
         transitive(false)
     }
-    modRuntime("com.terraformersmc:modmenu:${mod_menu_version}") {
-        transitive(false)
-    }
+    //modRuntime("com.terraformersmc:modmenu:${mod_menu_version}") {
+    //    transitive(false)
+    //}
 
     //Package Cloth Config inside the final built jar. This can increase the jar size by quite a bit so disable it if this not intended
     include "me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}"
@@ -74,8 +74,8 @@ if (System.getProperty("idea.sync.active") == "true") {
     }
 }
 
-def resourceTargets = ["fabric.mod.json", "pack.mcmeta"]
-def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
+def resourceTargets = ["fabric.mod.json"]
+def intoTargets = ["$buildDir/out/production/resources/", "$buildDir/out/production/${project.name}.main/", "$buildDir/bin/main/"]
 def replaceProperties = [mod_id: mod_id, mod_name: mod_name, mod_version: mod_version,
                    main_mod_class: main_mod_class,
                    mod_authors: mod_authors, mod_description: mod_description,
