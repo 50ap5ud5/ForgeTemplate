@@ -13,8 +13,8 @@ loom {
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = project.jar_name
-version = project.minecraft_version-project.mod_version
+archivesBaseName = project.jar_name + "-" + project.minecraft_version
+version = project.mod_version
 group = project.maven_group
 
 repositories {
