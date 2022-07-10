@@ -12,6 +12,7 @@ logoFile = "${logo_file}" #optional
 credits = "${credits}"
 authors = "${mod_authors}"
 description = '''${mod_description}'''
+#displayTest="${display_test_type}"
 
 [[dependencies.${mod_id}]]
 modId = "forge"
